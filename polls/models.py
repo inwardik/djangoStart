@@ -3,6 +3,8 @@ import datetime
 from django.db import models
 from django.utils import timezone
 from django.contrib import admin
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class Question(models.Model):
@@ -20,6 +22,14 @@ class Question(models.Model):
     def was_published_recently(self):
         now = timezone.now()
         return now - datetime.timedelta(days=1) <= self.pub_date <= now
+
+
+@receiver(post_save, sender=Question)
+def question_created_handler(sender, instance, created, *args, **kwargs):
+    if created:
+        print("created", instance.question_text)
+    else:
+        print(instance.question_text, "was just saved")
 
 
 class Choice(models.Model):

@@ -3,6 +3,7 @@ import datetime
 from django.test import TestCase
 from django.utils import timezone
 from django.urls import reverse
+from django.contrib.auth.models import User, Permission
 
 from .models import Question, Choice
 
@@ -120,3 +121,21 @@ class QuestionResultsViewTests(TestCase):
         response = self.client.get(reverse('polls:results', kwargs={'pk': question.pk}))
         self.assertEqual(response.status_code, 404)
 
+
+class QuestionDetailViewTestsUsers(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.past_question = create_question(question_text='Past Question.', days=-5)
+        self.url = reverse('polls:detail', args=(self.past_question.id,))
+
+    def test_admin_user(self):
+        self.user.is_superuser = True
+        self.user.save()
+        login = self.client.login(username='testuser', password='12345')
+        response = self.client.get(self.url)
+        self.assertContains(response, self.past_question.question_text)
+
+    def test_non_admin_user(self):
+        login = self.client.login(username='testuser', password='12345')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)

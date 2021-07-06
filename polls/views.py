@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
+from django.db.models.signals import pre_save
 
 from .models import Question, Choice
 
@@ -13,6 +14,9 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         """Return  the last five published questions"""
+        if self.request.user.has_perm('polls.view_question'):
+            print('superuser')
+            return Question.objects.filter(pub_date__lte=timezone.now()).order_by('-pub_date')[:5]
         return Question.objects.filter(choice__isnull=False).distinct()\
             .filter(pub_date__lte=timezone.now()).order_by('-pub_date')[:5]
 
@@ -22,6 +26,9 @@ class DetailView(generic.DetailView):
     template_name = 'polls/detail.html'
 
     def get_queryset(self):
+        if self.request.user.is_superuser:
+            print('superuser')
+            return Question.objects.filter(pub_date__lte=timezone.now())
         return Question.objects.filter(choice__isnull=False).distinct().filter(pub_date__lte=timezone.now())
 
 
