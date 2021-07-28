@@ -1,10 +1,10 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 
-from .models import Question, Choice
+from .models import Question, Choice, FOP
 
 
 class IndexView(generic.ListView):
@@ -46,5 +46,11 @@ def vote(request, question_id):
         selected_choice.votes += 1
         selected_choice.save()
         return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
-    
+
 a = "add some new code into dev branch"
+
+def fopview(request):
+    fop = FOP.objects.create(user='user1', pos='pos1')
+    print(fop)
+    print('add some code for feature-pep1')
+    return HttpResponse('asdf')

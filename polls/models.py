@@ -29,3 +29,28 @@ class Choice(models.Model):
 
     def __str__(self):
         return self.choice_text
+
+
+class FOP(models.Model):
+    class Pos:
+        qmo = 'qmo'
+        pmo = 'pmo'
+        sdo = 'sdo'
+
+    POS_CHOICES = (
+        (Pos.pmo, 'PMO'),
+        (Pos.qmo, 'QMO'),
+        (Pos.sdo, 'SDO'),
+    )
+    user = models.CharField(
+        verbose_name='user',
+        max_length=100,
+        null=True,
+        blank=True
+    )
+
+    pos = models.CharField(
+        verbose_name='pos',
+        max_length=100,
+        choices=POS_CHOICES
+    )
