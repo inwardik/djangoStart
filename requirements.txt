@@ -1,4 +1,3 @@
-asgiref==3.4.1
 Django==3.2.5
 environ==1.0
 psycopg2==2.9.1
